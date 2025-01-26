@@ -26,7 +26,7 @@
  * on "createThread." Also ensure the GEOJSON polygons are valid.
  ******************************************************************************/
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import Map, { Marker, Source, Layer } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -121,7 +121,8 @@ const modernStyles = {
     backgroundColor: '#ffffff',
     borderRadius: '16px',
     boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
-    overflowY: 'auto'
+    overflowY: 'auto',
+    marginBottom: 0
   },
 
   message: {
@@ -142,38 +143,11 @@ const modernStyles = {
     borderLeft: '4px solid #38bdf8'
   },
 
-  controls: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '12px',
-    marginBottom: '16px'
-  },
-
   label: {
     fontSize: '14px',
     fontWeight: '500',
     color: '#4b5563',
     marginBottom: '6px'
-  },
-
-  scorecard: {
-    padding: '16px',
-    backgroundColor: '#ffffff',
-    borderRadius: '16px',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
-  },
-
-  scorecardTitle: {
-    fontSize: '18px',
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: '12px'
-  },
-
-  scorecardData: {
-    fontSize: '24px',
-    fontWeight: '700',
-    color: '#34d399'
   },
 
   mapContainer: {
@@ -273,7 +247,8 @@ const modernStyles = {
     borderRadius: '12px',
     cursor: 'pointer',
     transition: 'transform 0.2s ease, background-color 0.2s ease',
-  }
+  },
+  
 };
 
 const keyframes = `
@@ -290,6 +265,18 @@ const keyframes = `
       transform: scale(1);
       box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
     }
+  }
+
+  @keyframes windJiggle {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(2deg); }
+    75% { transform: rotate(-2deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  .wind-arrow {
+    animation: windJiggle 3s ease-in-out infinite;
+    transform-origin: 40px 30px;
   }
 `;
 
@@ -721,17 +708,30 @@ async function fetchAssistantMessage(thread_id) {
  *   3) createRun(thread.id)
  *   4) fetchAssistantMessage(thread.id)
  */
-async function doAssistantConversation(userContent) {
-  const thread = await createThread();
-  await createThreadMessage(thread.id, "user", userContent);
-  await createRun(thread.id);
+async function doAssistantConversation(userContent, threadId = null) {
+  // If we have a threadId, re-use it. Otherwise, create a new thread.
+  let actualThreadId = threadId;
+  if (!actualThreadId) {
+    const threadObj = await createThread();
+    actualThreadId = threadObj.id;
+  }
 
-  const reply = await fetchAssistantMessage(thread.id);
+  // 1) Add the user message to that existing or newly created thread
+  await createThreadMessage(actualThreadId, "user", userContent);
+
+  // 2) Create a run on that same thread
+  await createRun(actualThreadId);
+
+  // 3) Get the assistant's reply from that same thread
+  const reply = await fetchAssistantMessage(actualThreadId);
   if (!reply) {
     throw new Error("No assistant message found after run completion.");
   }
-  return reply;
+
+  // Return both the text and the thread ID so the caller can store it
+  return { reply, threadId: actualThreadId };
 }
+
 
 // ============== MAIN REACT COMPONENT ================
 function Hole8Game() {
@@ -741,11 +741,27 @@ function Hole8Game() {
   const [messages, setMessages] = useState([]);
   const [shotCount, setShotCount] = useState(0);
   const [score, setScore] = useState(0);
+  const [gptThreadId, setGptThreadId] = useState(null);
 
   const [ballPos, setBallPos] = useState({ ...HOLE_8.tee });
   const [animating, setAnimating] = useState(false);
   const [isFirstShot, setIsFirstShot] = useState(true);
   const [showGreenOverlay, setShowGreenOverlay] = useState(false);
+  const handleMouseDown = useCallback((e) => {
+  if (animating) return;
+  
+  const centerX = ballPos.lng;
+  const centerY = ballPos.lat;
+  
+  const clickLng = e.lngLat.lng;
+  const clickLat = e.lngLat.lat;
+  
+  const angleRad = Math.atan2(clickLat - centerY, clickLng - centerX);
+  const baseBearing = bearingBetween(ballPos, HOLE_8.pin);
+  const angleDeg = ((angleRad - baseBearing) * 180 / Math.PI);
+  
+  setAim(angleDeg.toFixed(1));
+}, [ballPos, animating]);
 
   // UI fields
   const [windSpeed, setWindSpeed] = useState("10");
@@ -856,62 +872,66 @@ function Hole8Game() {
   // Main shot function
   async function handleTakeShot() {
     if (!shotInput.trim() || animating) return;
+  
     addUser(shotInput);
+    setShotInput("");
+    setAnimating(true);
     setShotCount((c) => c + 1);
-
-    // 1) Build step1 prompt => numeric shot data
+  
     const rawDist = distanceYards(ballPos, HOLE_8.pin);
-    const distToPin = rawDist && !isNaN(rawDist) ? rawDist.toFixed(1) : "999";
+    const distToPin = (rawDist && !isNaN(rawDist)) ? rawDist.toFixed(1) : "999";
     const shotLie = isFirstShot ? "tee" : detectCollision(ballPos);
     const adjustedMaxDist = getMaxDistanceForClubAndLie(club, shotLie);
-
+  
     const step1Prompt = `
-Return dice rolls, TDS, shot outcome in JSON (no commentary).
-Context:
-- Handicap: ${handicap}
-- Lie: ${shotLie}
-- Club: ${club} (maxDist=${adjustedMaxDist})
-- Wind Speed: ${windSpeed}
-- Wind Dir: ${windDir}
-- Aim offset: ${aim} deg
-- DistToPin: ${distToPin} yards
-- ShotDesc: "${shotInput}"
-`.trim();
-
+  Return dice rolls, TDS, shot outcome in JSON (no commentary).
+  Context:
+  - Handicap: ${handicap}
+  - Lie: ${shotLie}
+  - Club: ${club} (maxDist=${adjustedMaxDist})
+  - Wind Speed: ${windSpeed}
+  - Wind Dir: ${windDir}
+  - Aim offset: ${aim} deg
+  - DistToPin: ${distToPin} yards
+  - ShotDesc: "${shotInput}"
+    `.trim();
+  
     console.log("[handleTakeShot] Step1 prompt =>", step1Prompt);
-
-    let step1Reply = "";
+  
+    let step1ReplyString = "";
+    let newThreadId = gptThreadId; // We'll store the updated thread here
     try {
-      step1Reply = await doAssistantConversation(step1Prompt);
-      console.log("[handleTakeShot] Step1 raw =>", step1Reply);
-    } catch (e) {
-      console.error(e);
-      addAnnouncer(`(Error retrieving dice data: ${e.message})`);
+      const step1Result = await doAssistantConversation(step1Prompt, gptThreadId);
+      step1ReplyString = step1Result.reply;
+      newThreadId = step1Result.threadId;
+      // Update React state too, but do NOT rely on it for Step 2
+      setGptThreadId(newThreadId);
+    } catch (err) {
+      console.error(err);
+      addAnnouncer(`(Error retrieving dice data: ${err.message})`);
+      setAnimating(false);
       return;
     }
-
-    // parse GPT response
-    const shotJson = parseShotJSON(step1Reply);
+  
+    const shotJson = parseShotJSON(step1ReplyString);
     if (!shotJson) {
       addAnnouncer("No valid JSON. Try again?");
+      setAnimating(false);
       return;
     }
+  
     const distance = shotJson.distance || 0;
     const direction = shotJson.direction || 0;
-
-    // 2) Animate the shot
+  
     setAnimating(true);
     const startPos = { ...ballPos };
     const endPos = computeNewPos(distance, direction);
     await animateBall(startPos, endPos);
     setAnimating(false);
-
-    // 3) Detect collision => outcome
+  
     const outcome = detectCollision(endPos);
     let finalPos = endPos;
-
     if (outcome === "ob") {
-      // if OB => find entry
       const entry = findOBEntryPoint(startPos, endPos);
       finalPos = entry;
       setBallPos(entry);
@@ -920,53 +940,47 @@ Context:
     } else {
       setBallPos(endPos);
     }
-
-    // 4) Build step2 prompt => approach + putting or normal commentary
+  
     const remainingDist = distanceYards(finalPos, HOLE_8.pin).toFixed(1);
-
     let step2Prompt;
     if (outcome === "green") {
       step2Prompt = `
-We ended on the green. Provide a single combined commentary describing:
-1) The final approach shot
-2) The entire putting sequence, tailored to the player's skill level
-
-Return EXACT valid JSON with integer "shots" and string "commentary", no code blocks or extraneous text.
-Example:
-{
-  "shots": 5,
-  "commentary": "Single combined approach + putting commentary..."
-}
-`.trim();
+  We ended on the green. Provide a single combined commentary describing:
+  1) The final approach shot
+  2) The entire putting sequence, tailored to the player's skill level
+  Return EXACT valid JSON with integer "shots" and string "commentary", no code blocks or extraneous text.
+  Example:
+  {
+    "shots": 5,
+    "commentary": "Single combined approach + putting commentary..."
+  }
+      `.trim();
     } else {
       step2Prompt = `
-The ball landed in the ${outcome}. 
-You are now ${remainingDist} yards from the pin.
-Taking into consideration the previous dice roll outcomes, provide broadcast commentary in one paragraph (no numeric data or dice references in the commentary).
-
-Return EXACT valid JSON with integer "shots" and string "commentary", no code blocks or extraneous text.
-Example:
-{
-  "shots": 6,
-  "commentary": "One paragraph commentary..."
-}
-`.trim();
+  The ball landed in the ${outcome}.
+  You are now ${remainingDist} yards from the pin.
+  Provide broadcast commentary in one paragraph (no numeric data or dice references).
+  Return EXACT valid JSON with integer "shots" and string "commentary", no code blocks or extraneous text.
+  Example:
+  {
+    "shots": 6,
+    "commentary": "One paragraph commentary..."
+  }
+      `.trim();
     }
-
-    // 5) Single try/catch for step2
+  
     try {
-      const step2Reply = await doAssistantConversation(step2Prompt);
-      console.log("[handleTakeShot] Step2 =>", step2Reply);
-
-      // parse JSON
-      const finalObj = parseShotJSON(step2Reply);
+      // IMPORTANT: Use newThreadId here instead of gptThreadId
+      const step2Result = await doAssistantConversation(step2Prompt, newThreadId);
+      const step2ReplyString = step2Result.reply;
+      console.log("[handleTakeShot] Step2 =>", step2ReplyString);
+  
+      const finalObj = parseShotJSON(step2ReplyString);
       if (!finalObj || typeof finalObj.shots !== "number" || !finalObj.commentary) {
-        addAnnouncer(step2Reply);
+        addAnnouncer(step2ReplyString);
       } else {
         setShotCount(finalObj.shots);
         addAnnouncer(finalObj.commentary);
-
-        // If outcome is green => show overlay
         if (outcome === "green") {
           setShowGreenOverlay(true);
         }
@@ -974,156 +988,131 @@ Example:
     } catch (e) {
       console.error(e);
       addAnnouncer(`(Error retrieving final commentary: ${e.message})`);
+    } finally {
+      setAnimating(false);
+      if (isFirstShot) setIsFirstShot(false);
+      setShotInput("");
     }
-
-    // done
-    if (isFirstShot) setIsFirstShot(false);
-    setShotInput("");
   }
+  
+  
+
 
   // RENDER
   return (
     <div style={modernStyles.container}>
       <style>{keyframes}</style>
 
-      {/* LEFT Panel */}
-      <div style={modernStyles.leftPanel}>
-        {/* Handicap input */}
-        {!gotHandicap && (
-          <div style={modernStyles.card}>
-            <h2 style={modernStyles.header}>Enter Handicap</h2>
-            <input
-              type="number"
-              value={handicap}
-              onChange={(e) => setHandicap(e.target.value)}
-              style={modernStyles.input}
-              placeholder="Enter 0-36"
-            />
-            <button style={modernStyles.button} onClick={handleApplyHandicap}>
-              Start Round
-            </button>
-          </div>
-        )}
+{/* LEFT Panel */}
+<div style={modernStyles.leftPanel}>
+  {/* Handicap input */}
+  {!gotHandicap && (
+    <div style={modernStyles.card}>
+      <h2 style={modernStyles.header}>Enter Handicap</h2>
+      <input
+        type="number"
+        value={handicap}
+        onChange={(e) => setHandicap(e.target.value)}
+        style={modernStyles.input}
+        placeholder="Enter 0-36"
+      />
+      <button style={modernStyles.button} onClick={handleApplyHandicap}>
+        Start Round
+      </button>
+    </div>
+  )}
 
-        {/* Start hole */}
-        {gotHandicap && !started && (
-          <div style={modernStyles.card}>
-            <h2 style={modernStyles.header}>Pebble Beach - Hole 8</h2>
-            <p style={modernStyles.label}>Par {HOLE_8.par}, {HOLE_8.yards} yards</p>
-            <button style={modernStyles.button} onClick={handleStart}>
-              Begin Hole
-            </button>
-          </div>
-        )}
+  {/* Start hole */}
+  {gotHandicap && !started && (
+    <div style={modernStyles.card}>
+      <h2 style={modernStyles.header}>Pebble Beach - Hole 8</h2>
+      <p style={modernStyles.label}>Par {HOLE_8.par}, {HOLE_8.yards} yards</p>
+      <button style={modernStyles.button} onClick={handleStart}>
+        Begin Hole
+      </button>
+    </div>
+  )}
 
-        {/* Shot controls */}
-        {gotHandicap && started && (
-          <div style={modernStyles.card}>
-            <div style={modernStyles.controls}>
-              <div>
-                <label style={modernStyles.label}>Wind Speed (mph)</label>
-                <input
-                  type="number"
-                  value={windSpeed}
-                  readOnly
-                  style={modernStyles.input}
-                />
-              </div>
-              <div>
-                <label style={modernStyles.label}>Wind Direction (°)</label>
-                <input
-                  type="number"
-                  value={windDir}
-                  readOnly
-                  style={modernStyles.input}
-                />
-              </div>
-            </div>
-
-            <div style={modernStyles.controls}>
-              <div>
-                <label style={modernStyles.label}>Club Selection</label>
-                <select
-                  value={club}
-                  onChange={(e) => setClub(e.target.value)}
-                  style={modernStyles.select}
-                >
-                  <option>Driver</option>
-                  <option>3 Wood</option>
-                  <option>5 Wood</option>
-                  <option>3 Iron</option>
-                  <option>4 Iron</option>
-                  <option>5 Iron</option>
-                  <option>6 Iron</option>
-                  <option>7 Iron</option>
-                  <option>8 Iron</option>
-                  <option>9 Iron</option>
-                  <option>Pitching Wedge</option>
-                  <option>Gap Wedge</option>
-                  <option>Sand Wedge</option>
-                  <option>Lob Wedge</option>
-                </select>
-              </div>
-              <div>
-                <label style={modernStyles.label}>Aim Offset (°)</label>
-                <input
-                  type="number"
-                  value={aim}
-                  onChange={(e) => setAim(e.target.value)}
-                  style={modernStyles.input}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Chat/Commentary Feed */}
-        <div style={modernStyles.chatContainer}>
-          {messages.map((m, i) => {
-            if (m.sender === "Announcer") {
-              return (
-                <div key={i} style={{ ...modernStyles.message, ...modernStyles.announcerMessage }}>
-                  <strong>Announcer:</strong> {m.text}
-                </div>
-              );
-            }
+  {/* Main Game UI */}
+  {gotHandicap && started && (
+    <>
+      {/* Commentary Feed */}
+      <div style={modernStyles.chatContainer}>
+        {messages.map((m, i) => {
+          if (m.sender === "Announcer") {
             return (
-              <div key={i} style={{ ...modernStyles.message, ...modernStyles.userMessage }}>
-                <strong>You:</strong> {m.text}
+              <div key={i} style={{ ...modernStyles.message, ...modernStyles.announcerMessage }}>
+                <strong>Announcer:</strong> {m.text}
               </div>
             );
-          })}
+          }
+          return (
+            <div key={i} style={{ ...modernStyles.message, ...modernStyles.userMessage }}>
+              <strong>You:</strong> {m.text}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Controls Section */}
+      <div style={modernStyles.card}>
+        {/* Compact Scorecard */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div style={{ fontSize: '18px', fontWeight: '600', color: '#34d399' }}>
+            Shots: {shotCount}
+          </div>
+          <div style={{ fontSize: '18px', fontWeight: '600', color: '#34d399' }}>
+            Total: {score}
+          </div>
         </div>
 
-        {/* Shot Input and Scoreboard */}
-        {gotHandicap && started && (
-          <>
-            <div style={modernStyles.card}>
-              <textarea
-                style={modernStyles.input}
-                placeholder="Describe your shot..."
-                value={shotInput}
-                onChange={(e) => setShotInput(e.target.value)}
-              />
-              <button
-                style={modernStyles.button}
-                onClick={handleTakeShot}
-                disabled={animating}
-              >
-                {animating ? "Ball in Motion..." : "Take Shot"}
-              </button>
-            </div>
+        {/* Club Selection */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+          <label style={modernStyles.label}>Club Selection</label>
+          <select
+            value={club}
+            onChange={(e) => setClub(e.target.value)}
+            style={{ ...modernStyles.select, flex: 1 }}
+          >
+            <option>Driver</option>
+            <option>3 Wood</option>
+            <option>5 Wood</option>
+            <option>3 Iron</option>
+            <option>4 Iron</option>
+            <option>5 Iron</option>
+            <option>6 Iron</option>
+            <option>7 Iron</option>
+            <option>8 Iron</option>
+            <option>9 Iron</option>
+            <option>Pitching Wedge</option>
+            <option>Gap Wedge</option>
+            <option>Sand Wedge</option>
+            <option>Lob Wedge</option>
+          </select>
+        </div>
 
-            <div style={modernStyles.scorecard}>
-              <h3 style={modernStyles.scorecardTitle}>Scorecard</h3>
-              <div style={modernStyles.scorecardData}>
-                <p>Shots: {shotCount}</p>
-                <p>Total: {score}</p>
-              </div>
-            </div>
-          </>
-        )}
+        {/* Shot Input */}
+        <textarea
+          style={{ ...modernStyles.input, height: '96px', marginBottom: '16px' }}
+          placeholder="Describe your shot..."
+          value={shotInput}
+          onChange={(e) => setShotInput(e.target.value)}
+        />
+
+        {/* Take Shot Button */}
+        <button
+          style={modernStyles.button}
+          onClick={handleTakeShot}
+          disabled={animating}
+        >
+          {animating ? "Ball in Motion..." : "Take Shot"}
+        </button>
       </div>
+    </>
+  )}
+</div>
+
+      
 
       {/* RIGHT Panel - Map */}
       <div style={modernStyles.mapContainer}>
@@ -1139,6 +1128,7 @@ Example:
             style={{ width: "100%", height: "100%" }}
             mapStyle="mapbox://styles/mapbox/satellite-v9"
             mapboxAccessToken={MAPBOX_TOKEN}
+            onMouseDown={handleMouseDown}
           >
             {/* Fairway */}
             <Source
@@ -1207,6 +1197,34 @@ Example:
                 paint={{ "fill-color": "#F9D57F", "fill-opacity": 0 }}
               />
             </Source>
+            // Add inside Map component, right before the Ball Marker
+            <Source
+  id="aim-line"
+  type="geojson"
+  data={{
+    type: 'Feature',
+    geometry: {
+      type: 'LineString',
+      coordinates: [
+        [ballPos.lng, ballPos.lat],
+        [
+          ballPos.lng + Math.cos((bearingBetween(ballPos, HOLE_8.pin) + (parseInt(aim) * Math.PI / 180))) * 0.0015,
+          ballPos.lat + Math.sin((bearingBetween(ballPos, HOLE_8.pin) + (parseInt(aim) * Math.PI / 180))) * 0.0015
+        ]
+      ]
+    }
+  }}>
+  <Layer
+    id="aim-line-layer"
+    type="line"
+    paint={{
+      'line-color': '#34d399',
+      'line-width': 2,
+      'line-dasharray': [2, 2],
+      'line-opacity': 0.8
+    }}
+  />
+</Source>
 
             {/* Ball Marker */}
             <Marker latitude={ballPos.lat} longitude={ballPos.lng} anchor="center">
@@ -1230,6 +1248,35 @@ Example:
                 <path d="M9 2L19 8L9 14" />
               </svg>
             </Marker>
+            {/* Wind Direction Overlay */}
+            <div style={{
+  position: 'absolute',
+  top: '20px',
+  right: '20px',
+  width: '80px',
+  height: '60px',
+  zIndex: 10,
+  pointerEvents: 'none'
+}}>
+<svg viewBox="0 0 80 60">
+  <g transform={`rotate(${windDir}, 40, 30)`} className="wind-arrow">
+    <path d="M45 35
+             L10 30
+             L45 25
+             Z" 
+          fill="#34d399"/>
+  </g>
+    <text x="40" y="55" 
+          textAnchor="middle" 
+          fontFamily="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+          fontSize="14" 
+          fill="#34d399" 
+          fontWeight="600">
+      {windSpeed} mph
+    </text>
+  </svg>
+</div>
+            
           </Map>
         ) : (
           <div style={{ padding: "16px" }}>
