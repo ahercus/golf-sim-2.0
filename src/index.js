@@ -175,10 +175,12 @@ const modernStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 9999
+    zIndex: 9999,
+    pointerEvents: 'none'   
   },
 
   overlayContent: {
+    pointerEvents: 'auto',
     backgroundColor: '#fff',
     padding: '32px',
     borderRadius: '16px',
@@ -742,6 +744,7 @@ function Hole8Game() {
   const [shotCount, setShotCount] = useState(0);
   const [score, setScore] = useState(0);
   const [gptThreadId, setGptThreadId] = useState(null);
+  const [holeFinished, setHoleFinished] = useState(false);
 
   const [ballPos, setBallPos] = useState({ ...HOLE_8.tee });
   const [animating, setAnimating] = useState(false);
@@ -982,7 +985,7 @@ function Hole8Game() {
         setShotCount(finalObj.shots);
         addAnnouncer(finalObj.commentary);
         if (outcome === "green") {
-          setShowGreenOverlay(true);
+          setHoleFinished(true);
         }
       }
     } catch (e) {
@@ -1101,12 +1104,16 @@ function Hole8Game() {
 
         {/* Take Shot Button */}
         <button
-          style={modernStyles.button}
-          onClick={handleTakeShot}
-          disabled={animating}
-        >
-          {animating ? "Ball in Motion..." : "Take Shot"}
-        </button>
+  style={modernStyles.button}
+  onClick={holeFinished ? handleReplayHole : handleTakeShot}
+  disabled={animating}
+>
+  {animating
+    ? "Ball in Motion..."
+    : holeFinished
+      ? "Replay Hole"
+      : "Take Shot"}
+</button>
       </div>
     </>
   )}
@@ -1116,20 +1123,80 @@ function Hole8Game() {
 
       {/* RIGHT Panel - Map */}
       <div style={modernStyles.mapContainer}>
-        {MAPBOX_TOKEN ? (
-          <Map
-            initialViewState={{
-              latitude: HOLE_8.tee.lat,
-              longitude: HOLE_8.tee.lng,
-              zoom: 17,
-              pitch: 60,
-              bearing: 20
-            }}
-            style={{ width: "100%", height: "100%" }}
-            mapStyle="mapbox://styles/mapbox/satellite-v9"
-            mapboxAccessToken={MAPBOX_TOKEN}
-            onMouseDown={handleMouseDown}
-          >
+  {MAPBOX_TOKEN ? (
+    <Map
+      initialViewState={{
+        latitude: HOLE_8.tee.lat,
+        longitude: HOLE_8.tee.lng,
+        zoom: 17,
+        pitch: 60,
+        bearing: 20
+      }}
+      style={{ width: "100%", height: "100%" }}
+      mapStyle="mapbox://styles/mapbox/satellite-streets-v11"
+      mapboxAccessToken={MAPBOX_TOKEN}
+      onMouseDown={handleMouseDown}
+      onLoad={(evt) => {
+        const map = evt.target;
+
+        // 1) Add terrain source
+        map.addSource("mapbox-dem", {
+          type: "raster-dem",
+          url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+          tileSize: 512,
+          maxzoom: 14
+        });
+        map.setTerrain({ source: "mapbox-dem", exaggeration: 1.5 });
+
+        // 2) Custom hillshading layer
+        map.addLayer({
+          id: "hillshading",
+          type: "hillshade",
+          source: "mapbox-dem",
+          paint: {
+            "hillshade-shadow-color": "#2c3e50",
+            "hillshade-highlight-color": "#ecf0f1",
+            "hillshade-exaggeration": 0.5
+          }
+        });
+
+        // 3) Random time-of-day lighting
+        const randomAzimuth = Math.floor(Math.random() * 360);
+        const randomAltitude = 20 + Math.random() * 50; // 20..70
+        map.setLight({
+          anchor: "map",
+          position: [randomAzimuth, randomAltitude],
+          color: "white",
+          intensity: 0.5
+        });
+
+        // 4) 3D Buildings: satellite-streets-v11 has building footprints
+        const layers = map.getStyle().layers;
+        // find first symbol layer to place 3D buildings below it
+        const labelLayerId = layers.find(
+          (layer) => layer.type === "symbol" && layer.layout["text-field"]
+        )?.id;
+
+        if (labelLayerId) {
+          map.addLayer(
+            {
+              id: "3d-buildings",
+              source: "composite",
+              "source-layer": "building",
+              type: "fill-extrusion",
+              minzoom: 15,
+              paint: {
+                "fill-extrusion-color": "#aaa",
+                "fill-extrusion-height": ["get", "height"],
+                "fill-extrusion-base": ["get", "min_height"],
+                "fill-extrusion-opacity": 0.6
+              }
+            },
+            labelLayerId
+          );
+        }
+      }}
+    >
             {/* Fairway */}
             <Source
               id="fairway-src"
@@ -1285,17 +1352,7 @@ function Hole8Game() {
         )}
       </div>
 
-      {/* If 'showGreenOverlay' is true => show 'Well done!' overlay */}
-      {showGreenOverlay && (
-        <div style={modernStyles.overlay}>
-          <div style={modernStyles.overlayContent}>
-            <h2 style={modernStyles.overlayTitle}>Well done!</h2>
-            <button style={modernStyles.overlayButton} onClick={handleReplayHole}>
-              Replay Hole
-            </button>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
