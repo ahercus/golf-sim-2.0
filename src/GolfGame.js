@@ -11,8 +11,8 @@ import AimingOverlay from './AimingOverlay';
 import PlayerInfoBox from './PlayerInfoBox'; // <<< Import the new component
 
 // Data Imports
-import { PebbleData } from './courseData/PebbleData.js';
-import { HoleMetadata } from './courseData/HoleMetadata.js';
+import { PebbleData } from './courseData/PebbleData';
+import { HoleMetadata } from './courseData/HoleMetadata';
 
 // Style Imports
 import { modernStyles } from './styles/GameStyles.js';
