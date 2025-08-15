@@ -247,7 +247,7 @@
 
 ### Phase 3 – State
 
-- [ ] Add `useGameStore.ts` (Zustand) for global state
+- [x] Add `useGameStore.ts` (Zustand) for global state
 - [ ] Add `shotMachine.ts` (XState) and integrate with UI
 
 ### Phase 4 – Components
@@ -280,7 +280,7 @@
 ### Phase 8 – Cleanup
 
 - [ ] Remove CRA files and unused deps
-- [ ] Update README with Next.js commands
+- [x] Update README with Next.js commands
 - [ ] Merge to `main`
 
 
