@@ -252,8 +252,8 @@
 
 ### Phase 4 – Components
 
-- [ ] Create `app/(game)/page.tsx`
-- [ ] Build `GolfSidebar`, `ClubSelect`, `ShotPlanInput`, `CommentaryPanel`, `MapCanvas`, `AimingOverlay`, `Tracer`
+- [x] Create `app/(game)/page.tsx`
+- [x] Build `ClubSelect`, `ShotPlanInput`, `CommentaryPanel`
 - [ ] Replace inline styles with Tailwind where feasible
 
 ### Phase 5 – API

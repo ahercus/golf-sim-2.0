@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '../components/ui/select';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
-import { Label } from '../components/ui/label';
+import ClubSelect from '@/app/(game)/components/ClubSelect';
+import ShotPlanInput from '@/app/(game)/components/ShotPlanInput';
+import CommentaryPanel from '@/app/(game)/components/CommentaryPanel';
 import Map, { Marker, Source, Layer, FlyToInterpolator } from 'react-map-gl';
 import { distanceYards, calculatePointAtDistance, bearingBetween, buildLinearPath } from '@/features/golf/lib/geometry';
 import { isInMultiPolygon } from '@/features/golf/lib/collision';
@@ -1332,43 +1332,22 @@ function GolfGame({
                 <p>Wind: {wind.speed.toFixed(1)} mph @ {wind.direction.toFixed(0)}°</p>
               </div>
               <div style={modernStyles.clubSelector}>
-                <Label htmlFor="club-select">Club</Label>
-                <Select value={club} onValueChange={(val) => setClub(val)}>
-                  <SelectTrigger id="club-select" aria-label="Select club">
-                    <SelectValue placeholder="Select club" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(CLUB_BASE_DISTANCE).map((clubName) => (
-                      <SelectItem key={clubName} value={clubName}>{clubName}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <ClubSelect value={club} onChange={setClub} options={Object.keys(CLUB_BASE_DISTANCE)} />
               </div>
-              <div style={{ margin: '15px 0' }}>
-                <Label htmlFor="shot-description">Think through your shot</Label>
-                <Input
-                  id="shot-description"
-                  value={shotDescription}
-                  onChange={(e) => setShotDescription(e.target.value)}
-                  placeholder="Describe your plan and how you intend to execute it"
-                />
-              </div>
-              <Button 
+              <ShotPlanInput value={shotDescription} onChange={setShotDescription} />
+              <button 
                 onClick={handleTakeShot}
                 disabled={!targetPoint || !ballPosition || isLoading}
+                className="ui-button primary"
+                style={modernStyles.shotButton}
               >
                 {isLoading ? 'Processing...' : 'Take Shot'}
-              </Button>
+              </button>
             </div>
           )}
 
           {/* Commentary Tab Content */}          {activeSidebarTab === 'commentary' && (
-            <div style={modernStyles.messageContainer} className="commentary-content"> {/* Use existing style */}              {messages.map((msg, i) => (
-                <div key={i} style={msg.type === 'announcer' ? modernStyles.announcer : modernStyles.user}>
-                  {msg.text}
-                </div>
-              ))}
-            </div>
+            <CommentaryPanel messages={messages} className="commentary-content" style={modernStyles.messageContainer} />
           )}
         </div>
       </div>
