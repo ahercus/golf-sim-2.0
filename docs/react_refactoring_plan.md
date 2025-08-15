@@ -243,7 +243,7 @@
 
 - [x] Create `features/golf/lib/*` and migrate geometry/collision helpers
 - [x] Add `features/golf/types.ts` and type basic domain
-- [ ] Type `PebbleData` and `HoleMetadata`
+- [x] Type `PebbleData` and `HoleMetadata`
 
 ### Phase 3 – State
 
