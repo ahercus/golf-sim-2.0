@@ -5,6 +5,8 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
 import Map, { Marker, Source, Layer, FlyToInterpolator } from 'react-map-gl';
+import { distanceYards, calculatePointAtDistance, bearingBetween, buildLinearPath } from '@/features/golf/lib/geometry';
+import { isInMultiPolygon } from '@/features/golf/lib/collision';
 import AimingOverlay from './AimingOverlay'; // <<< Import the new component
 import PlayerInfoBox from './PlayerInfoBox'; // <<< Import the new component
 
@@ -53,53 +55,6 @@ const holeDescriptions = {
     18: "Par 5, 515 yards. Famous finisher. Likely 3-shotter. Fairway bunkers and tree complicate right shots. Snap hooks left go into Stillwater Cove. Long fairway bunker left from 150 yards in. Tree branches or front right bunker complicate approaches."
 };
 
-// --- Utility Functions (Moved from index.js) ---
-
-function distanceYards(a, b) {
-  if (!a || !b || !("lat" in a) || !("lng" in a) || !("lat" in b) || !("lng" in b)) {
-    console.warn("distanceYards invalid points:", a, b);
-    return 0;
-  }
-  const R = 6371e3;
-  const lat1 = (a.lat * Math.PI) / 180;
-  const lat2 = (b.lat * Math.PI) / 180;
-  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
-  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
-  const s = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
-  return (R * c) * 1.09361;
-}
-
-function isInPolygon(point, ring) {
-  if (!point || !ring) return false;
-  const x = point.lng, y = point.lat;
-  let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const xi = ring[i][0], yi = ring[i][1];
-    const xj = ring[j][0], yj = ring[j][1];
-    const intersect = ((yi > y) !== (yj > y)) &&
-      (x < ((xj - xi) * (y - yi) / (yj - yi) + xi));
-    if (intersect) inside = !inside;
-  }
-  return inside;
-}
-
-function isInMultiPolygon(point, geom) {
-  if (!geom) return false;
-  if (geom.type === "Polygon") {
-    return isInPolygon(point, geom.coordinates[0]);
-  }
-  if (geom.type === "MultiPolygon") {
-    for (let i = 0; i < geom.coordinates.length; i++) {
-      const outer = geom.coordinates[i][0];
-      if (isInPolygon(point, outer)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 function detectCollision(landingSpot, holeNumber) {
   const holeData = PebbleData[holeNumber];
   if (!holeData) {
@@ -137,13 +92,6 @@ function detectCollision(landingSpot, holeNumber) {
   return "rough";
 }
 
-function bearingBetween(a, b) {
-  if (!a || !b || !("lat" in a) || !("lng" in a) || !("lat" in b) || !("lng" in b)) return 0;
-  const dLat = b.lat - a.lat;
-  const dLng = b.lng - a.lng;
-  return Math.atan2(dLat, dLng);
-}
-
 function findOBEntryPoint(start, end, holeNumber) {
   let steps = 50;
   const latInc = (end.lat - start.lat) / steps;
@@ -162,23 +110,7 @@ function findOBEntryPoint(start, end, holeNumber) {
   return end;
 }
 
-// <<< NEW: Helper to calculate coordinates at a distance and bearing >>>
-function calculatePointAtDistance(start, bearingRad, distanceYards) {
-  const R = 6371e3; // Earth's radius in meters
-  const distanceMeters = distanceYards / 1.09361;
-  const lat1 = start.lat * Math.PI / 180;
-  const lon1 = start.lng * Math.PI / 180;
-
-  const lat2 = Math.asin(Math.sin(lat1) * Math.cos(distanceMeters / R) +
-                         Math.cos(lat1) * Math.sin(distanceMeters / R) * Math.sin(bearingRad));
-  const lon2 = lon1 + Math.atan2(Math.cos(bearingRad) * Math.sin(distanceMeters / R) * Math.cos(lat1),
-                                Math.cos(distanceMeters / R) - Math.sin(lat1) * Math.sin(lat2));
-
-  return {
-    lat: lat2 * 180 / Math.PI,
-    lng: lon2 * 180 / Math.PI
-  };
-}
+// Utility functions moved to '@/features/golf/lib/*'
 
 // --- OpenAI Assistant Functions (Moved from index.js) ---
 

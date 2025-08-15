@@ -241,8 +241,8 @@
 
 ### Phase 2 – Domain Logic
 
-- [ ] Create `features/golf/lib/*` and migrate geometry/collision/shot helpers
-- [ ] Add `features/golf/types.ts` and type all helpers
+- [x] Create `features/golf/lib/*` and migrate geometry/collision helpers
+- [x] Add `features/golf/types.ts` and type basic domain
 - [ ] Type `PebbleData` and `HoleMetadata`
 
 ### Phase 3 – State
