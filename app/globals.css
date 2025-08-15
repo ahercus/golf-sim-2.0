@@ -1,0 +1,10 @@
+@import 'mapbox-gl/dist/mapbox-gl.css';
+
+/* Tailwind base will be injected after init; preserve minimal global styles until full migration */
+html, body {
+  height: 100%;
+}
+
+* { box-sizing: border-box; }
+
+

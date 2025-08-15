@@ -24,7 +24,7 @@ import {
 // Constants
 // const ASSISTANT_ID = "asst_2MmxTf13uHuYYARbEsDX4Sdm";
 // const OPENAI_KEY = process.env.REACT_APP_OPENAI_API_KEY;
-const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || process.env.REACT_APP_MAPBOX_TOKEN;
 console.log("MAPBOX_TOKEN available:", !!MAPBOX_TOKEN, "Value:", MAPBOX_TOKEN?.substring(0, 10) + "...");
 const TRACER_DURATION_MS = 1500; // Animation duration for the tracer
 const TRACER_POINTS = 50; // Number of points in the tracer line

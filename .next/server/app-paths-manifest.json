@@ -1,0 +1,7 @@
+{
+  "/(game)/page": "app/(game)/page.js",
+  "/api/openai/thread/route": "app/api/openai/thread/route.js",
+  "/api/openai/run/route": "app/api/openai/run/route.js",
+  "/api/openai/message/route": "app/api/openai/message/route.js",
+  "/api/openai/latest/route": "app/api/openai/latest/route.js"
+}

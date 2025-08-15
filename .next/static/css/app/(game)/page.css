@@ -1,0 +1,770 @@
+/*!*******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!./src/PlayerInfoBox.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************/
+/* src/PlayerInfoBox.css */
+
+.player-info-box {
+  position: absolute;
+  top: 15px;  /* Slightly higher */
+  right: 15px; /* Slightly more inset */
+  /* Use a similar teal color with transparency */
+  background-color: rgba(13, 117, 105, 0.85); 
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px; /* Slightly more rounded */
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern sporty font */
+  font-weight: 600; /* Semi-bold */
+  display: grid; /* Use grid for more complex layout */
+  grid-template-areas:
+    "name       score"
+    "details    score";
+  grid-template-columns: 1fr auto; /* Name/Details take up space, score is auto width */
+  align-items: center; /* Vertically align items within grid rows */
+  gap: 2px 15px; /* Row gap, Column gap */
+  z-index: 50; 
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  min-width: 320px; /* Adjust if needed */
+  /* Optional: Add subtle background pattern if desired later */
+}
+
+.course-name {
+  position: absolute;
+  top: -10px; 
+  left: 15px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 2px 8px;
+  font-size: 0.65em;
+  border-radius: 4px;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+}
+
+.player-name-container {
+  grid-area: name; /* Place in grid */
+  background-color: #006747; /* Masters Green */
+  padding: 4px 12px;
+  border-radius: 5px;
+  border: 1.5px solid #FFD700; /* Brighter Gold/Yellow */
+  display: inline-block; /* Fit content */
+  margin-bottom: 2px; /* Space between name and details */
+}
+
+.player-name {
+  font-size: 1.2em;
+  letter-spacing: 1px;
+  font-weight: 700; /* Bold */
+}
+
+.hole-details {
+  grid-area: details; /* Place in grid */
+  display: flex;
+  align-items: center; /* Align items horizontally */
+  gap: 10px; /* Space between items */
+  font-size: 0.8em;
+  color: #c0c0c0; /* Lighter grey */
+  font-weight: 500;
+}
+
+.detail-item {
+   white-space: nowrap;
+   letter-spacing: 0.5px;
+}
+
+.shot-number-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.shot-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7em;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.shot-circle.active {
+  background-color: #DC143C; /* Crimson Red */
+  color: white;
+  box-shadow: 0 0 3px rgba(255, 0, 0, 0.5);
+}
+
+.score-display {
+  grid-area: score; /* Place in grid */
+  font-size: 2.5em; /* Larger score */
+  font-weight: 700; /* Bold */
+  line-height: 1; /* Adjust line height */
+  text-align: right;
+  padding-left: 15px; /* Ensure space from details */
+}
+
+/*
+.cut-line {
+  position: absolute;
+  bottom: -10px;
+  right: 15px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 2px 8px;
+  font-size: 0.65em;
+  border-radius: 4px;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+}
+*/ 
+/*!*******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!./src/WelcomeScreen.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************/
+.welcome-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  /* Background Image Styling - REMOVED (Applied inline now) */
+  /* background-image: url(/welcome-background.jpg); */
+  background-size: cover; 
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.welcome-card {
+  /* Semi-transparent Background */
+  background-color: rgba(255, 255, 255, 0.85); /* White with 85% opacity */
+  padding: 30px 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.welcome-card h1 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: var(--masters-green); /* Use theme color */
+  font-family: var(--masters-serif-font); /* Use theme font */
+  font-size: 2.2em;
+}
+
+.welcome-card p {
+  margin-bottom: 20px;
+  color: var(--masters-text-dark); /* Use theme color */
+  font-size: 1.1em;
+}
+
+.form-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+.submit-button {
+  padding: 12px 20px;
+  background-color: var(--masters-green);
+  color: var(--masters-white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: bold;
+  width: 100%;
+  transition: background-color 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.submit-button:hover {
+  background-color: var(--masters-dark-green);
+}
+
+/* --- Commentary Loading/Display Styles --- */
+
+.commentary-loading p {
+  font-style: italic;
+  color: #555;
+  padding: 30px 0;
+}
+
+.commentary-display {
+  margin-top: 20px;
+}
+
+.commentary-display .announcer-text {
+  background-color: #f0f0f0;
+  border-left: 4px solid var(--masters-yellow);
+  padding: 15px;
+  margin-bottom: 25px;
+  text-align: left;
+  font-style: italic;
+  color: #333;
+  line-height: 1.5;
+}
+
+.commentary-display .announcer-text em {
+  font-family: var(--masters-serif-font);
+}
+
+.start-game-button {
+  /* Specific styles if needed, otherwise inherits from submit-button */
+} 
+/*!*********************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!./src/App.css ***!
+  \*********************************************************************************************************************************************************************************************************************************************************/
+/* Global Styles */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif; /* Keep a clean sans-serif as default */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f9fa; /* Light off-white background */
+}
+
+:root {
+  --masters-green: #006747;
+  --masters-dark-green: #1a3a31;
+  --masters-yellow: #FFC72C;
+  --masters-white: #ffffff;
+  --masters-text-light: #f8f9fa;
+  --masters-text-dark: #212529;
+  --masters-serif-font: 'Times New Roman', Times, serif; /* Fallback Serif */
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--masters-white); /* Use variable */
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #ff0000;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Header Styles --- */
+.controls-header {
+  background-color: var(--masters-green);
+  color: var(--masters-white);
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--masters-yellow);
+  flex-shrink: 0; /* Prevent shrinking */
+  font-size: 0.9em;
+}
+
+.controls-header label {
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.controls-header select {
+  background-color: var(--masters-text-light);
+  color: var(--masters-text-dark);
+  border: 1px solid var(--masters-yellow);
+  border-radius: 2px;
+  padding: 4px 8px;
+  font-size: 0.9em;
+}
+
+.controls-header span {
+  margin-left: auto; /* Push player info to the right */
+  font-weight: bold;
+}
+
+/* --- Main Content Styles --- */
+.main-content {
+  flex-grow: 1;
+  display: flex; /* Needed for GolfGame layout */
+  min-height: 0; /* ADDED: Helps flexbox calculate height correctly in some cases */
+}
+
+/* Remove old scorecard container styles */
+/*
+.scorecard-container {
+  padding: 15px;
+  background-color: #ffffff;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+*/
+
+.scorecard {
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.scorecard h2 {
+  margin-bottom: 15px;
+  color: var(--masters-green);
+  font-family: var(--masters-serif-font);
+  font-size: 1.5em;
+  font-weight: normal;
+  border-bottom: 1px solid var(--masters-yellow);
+  padding-bottom: 5px;
+}
+
+.scorecard table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  font-size: 0.9em;
+  font-family: sans-serif; /* Use sans-serif for table data */
+}
+
+.scorecard th, .scorecard td {
+  border: 1px solid #ccc; /* Lighter grey border */
+  padding: 5px 7px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.scorecard th:first-child, .scorecard td:first-child {
+  text-align: left;
+  font-weight: bold;
+  background-color: #e9ecef; /* Lighter grey background for labels */
+  color: var(--masters-text-dark);
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 100px;
+}
+
+.scorecard thead th {
+  background-color: var(--masters-green);
+  color: var(--masters-white);
+  font-weight: bold;
+  border: 1px solid var(--masters-yellow);
+}
+
+.scorecard th:nth-child(11),
+.scorecard td:nth-child(11),
+.scorecard th:nth-child(21),
+.scorecard td:nth-child(21),
+.scorecard th:nth-child(22),
+.scorecard td:nth-child(22)
+{
+  background-color: #f0f0f0; /* Light grey for totals columns */
+  font-weight: bold;
+  border-left: 2px solid #aaa;
+  border-right: 2px solid #aaa;
+}
+
+.scorecard th:nth-child(11), /* OUT Header */
+.scorecard th:nth-child(21), /* IN Header */
+.scorecard th:nth-child(22)  /* TOT Header */
+{
+   background-color: var(--masters-dark-green);
+   color: var(--masters-yellow);
+   border: 1px solid var(--masters-yellow);
+}
+
+/* --- Scorecard Modal Styles --- */
+.scorecard-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--masters-green);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  z-index: 1000;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.scorecard-button:hover {
+  transform: scale(1.1);
+  background-color: #006747; /* Darker shade of masters green */
+}
+
+.scorecard-button:active {
+  transform: scale(0.95);
+}
+
+/* Ensure icon inside is click-through */
+.scorecard-button > * { pointer-events: none; }
+
+.scorecard-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75); /* Slightly darker overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure it's above trigger */
+}
+
+.scorecard-modal-content {
+  background-color: var(--masters-white);
+  padding: 20px;
+  border-radius: 4px;
+  border: 2px solid var(--masters-yellow);
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  position: relative;
+  max-width: 95%; /* Allow slightly wider */
+  width: auto; /* Let content dictate width */
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.scorecard-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  color: var(--masters-text-dark);
+  font-size: 24px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0;
+  line-height: 1;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.scorecard-close-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+/* Style for OUT/IN/TOT columns */
+.scorecard th:nth-child(11),
+.scorecard td:nth-child(11),
+.scorecard th:nth-child(21),
+.scorecard td:nth-child(21),
+.scorecard th:nth-child(22),
+.scorecard td:nth-child(22)
+{
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+/* --- Score Indicator Styles --- */
+
+.scorecard td {
+  position: relative; /* Needed for pseudo-elements if used later, and good practice */
+  box-sizing: border-box; /* Ensure borders are included in cell size */
+}
+
+/* Circle for Birdie */
+.scorecard td.birdie {
+  border: 2px solid var(--masters-green);
+  border-radius: 50%;
+}
+
+/* Double Circle for Eagle (using border and outline) */
+.scorecard td.eagle {
+  border: 2px solid #0D47A1; /* Darker Blue */
+  outline: 2px solid #0D47A1;
+  outline-offset: -4px; /* Bring outline inside border */
+  border-radius: 50%;
+}
+
+/* Square for Bogey */
+.scorecard td.bogey {
+  border: 2px solid #E65100; /* Darker Orange */
+  border-radius: 0; /* Ensure it's square */
+}
+
+/* Double Square for Double Bogey+ (using border and outline) */
+.scorecard td.double-bogey {
+  border: 2px solid #B71C1C; /* Darker Red */
+  outline: 2px solid #B71C1C;
+  outline-offset: -4px; /* Bring outline inside border */
+  border-radius: 0; /* Ensure it's square */
+}
+
+/* --- Loading Overlay Style --- */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Darker overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; /* Ensure it's above everything else */
+  color: white;
+  font-size: 1.5em;
+  font-weight: bold;
+  font-family: var(--masters-serif-font);
+}
+
+.loading-overlay div {
+    background-color: var(--masters-dark-green);
+    padding: 25px 45px;
+    border-radius: 4px;
+    border: 1px solid var(--masters-yellow);
+}
+
+/* <<< Styles for Scorecard Settings View >>> */
+.settings-toggle-button {
+  position: absolute;
+  top: 10px;  /* Align with close button */
+  left: 10px; /* Place in top-left corner */
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #555;
+  padding: 5px;
+  line-height: 1;
+}
+
+.settings-toggle-button:hover {
+  color: #000;
+}
+
+.settings-view h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--masters-green);
+  font-family: var(--masters-serif-font);
+}
+
+.settings-view .form-group {
+  margin-bottom: 15px;
+}
+
+.settings-view label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--masters-text-dark);
+}
+
+.settings-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.settings-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-between; /* Space out buttons */
+  gap: 10px; /* Add gap between buttons */
+}
+
+.settings-button {
+  padding: 10px 15px;
+  border-radius: 4px;
+  border: 1px solid;
+  cursor: pointer;
+  font-weight: bold;
+  flex: 1 1; /* Allow buttons to grow */
+}
+
+.settings-button.save {
+  background-color: var(--masters-green);
+  color: var(--masters-white);
+  border-color: var(--masters-yellow);
+}
+
+.settings-button.cancel {
+  background-color: #6c757d; /* Grey */
+  color: white;
+  border-color: #5a6268;
+}
+
+.settings-button.restart {
+  background-color: #dc3545; /* Red */
+  color: white;
+  border-color: #c82333;
+}
+
+/* --- Game Control Buttons --- */
+.aim-button, .drag-button {
+  position: fixed !important;
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  background-color: white !important;
+  color: var(--masters-green) !important;
+  border: 2px solid var(--masters-green) !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 24px !important;
+  z-index: 9999999 !important; /* Ultra high z-index */
+  transition: transform 0.2s ease, background-color 0.2s ease !important;
+}
+
+.aim-button:hover, .drag-button:hover {
+  transform: scale(1.1) !important;
+}
+
+.aim-button {
+  bottom: 20px !important;
+  left: 420px !important; 
+}
+
+.drag-button {
+  bottom: 20px !important;
+  left: 490px !important; 
+}
+
+.aim-button[data-active="true"], .drag-button[data-active="true"] {
+  background-color: var(--masters-green) !important;
+  color: white !important;
+}
+
+/* Make sure your control buttons are above everything else */
+/* Icons already sized; ensure pointer events none on child for clicks */
+.aim-button > * , .drag-button > * { pointer-events: none !important; }
+
+/* Improved crosshair cursor for aiming mode */
+.map-aim-mode, 
+.map-aim-mode canvas,
+.map-aim-mode div,
+.map-aim-mode .mapboxgl-canvas,
+.map-aim-mode .mapboxgl-canvas-container {
+  cursor: crosshair !important;
+}
+
+/* --- Sidebar Tab Styles --- */
+.sidebar-tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 15px; /* Space between tabs and content */
+}
+
+.sidebar-tab-button {
+  flex: 1 1; /* Make buttons share space equally */
+  padding: 10px 15px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600; /* Slightly bolder */
+  color: #666; /* Default inactive color */
+  text-align: center;
+  border-bottom: 3px solid transparent; /* Placeholder for active indicator */
+  transition: color 0.2s ease, border-bottom-color 0.2s ease;
+}
+
+.sidebar-tab-button:hover {
+  color: #000;
+  background-color: #f0f0f0; /* Subtle hover background */
+}
+
+.sidebar-tab-button.active {
+  color: var(--masters-green); /* Use theme color for active text */
+  border-bottom-color: var(--masters-green); /* Active indicator */
+}
+
+.sidebar-tab-content {
+  flex: 1 1; /* Allow content to fill remaining vertical space */
+  display: flex; /* Use flex for content switching */
+  flex-direction: column; /* Stack content vertically */
+  overflow: hidden; /* Prevent content overflow issues */
+}
+
+/* Ensure tab content divs fill the space */
+.shot-selection-content,
+.commentary-content {
+  flex: 1 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Allow scrolling within commentary */
+}
+
+/* Ensure message container inside commentary tab behaves */
+.commentary-content .messageContainer {
+    flex: 1 1;
+    /* Add any specific styles needed for commentary layout here */
+}
+
