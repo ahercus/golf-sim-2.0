@@ -1,0 +1,113 @@
+.welcome-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  /* Background Image Styling - REMOVED (Applied inline now) */
+  /* background-image: url(/welcome-background.jpg); */
+  background-size: cover; 
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.welcome-card {
+  /* Semi-transparent Background */
+  background-color: rgba(255, 255, 255, 0.85); /* White with 85% opacity */
+  padding: 30px 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.welcome-card h1 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: var(--masters-green); /* Use theme color */
+  font-family: var(--masters-serif-font); /* Use theme font */
+  font-size: 2.2em;
+}
+
+.welcome-card p {
+  margin-bottom: 20px;
+  color: var(--masters-text-dark); /* Use theme color */
+  font-size: 1.1em;
+}
+
+.form-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+.submit-button {
+  padding: 12px 20px;
+  background-color: var(--masters-green);
+  color: var(--masters-white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: bold;
+  width: 100%;
+  transition: background-color 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.submit-button:hover {
+  background-color: var(--masters-dark-green);
+}
+
+/* --- Commentary Loading/Display Styles --- */
+
+.commentary-loading p {
+  font-style: italic;
+  color: #555;
+  padding: 30px 0;
+}
+
+.commentary-display {
+  margin-top: 20px;
+}
+
+.commentary-display .announcer-text {
+  background-color: #f0f0f0;
+  border-left: 4px solid var(--masters-yellow);
+  padding: 15px;
+  margin-bottom: 25px;
+  text-align: left;
+  font-style: italic;
+  color: #333;
+  line-height: 1.5;
+}
+
+.commentary-display .announcer-text em {
+  font-family: var(--masters-serif-font);
+}
+
+.start-game-button {
+  /* Specific styles if needed, otherwise inherits from submit-button */
+} 

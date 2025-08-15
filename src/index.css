@@ -1,5 +1,10 @@
-body {
-  margin: 0;
+html,
+body,
+#root /* Assuming your React root element has id="root" in index.html */ {
+  height: 100%;
+  margin: 0; /* Ensure no default margins interfere */
+  padding: 0; /* Ensure no default padding interferes */
+  overflow: hidden; /* Prevent potential scrollbars on body/html */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -11,3 +16,97 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* --- Keyframes (Moved from index.js) --- */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(52, 211, 153, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+  }
+}
+
+@keyframes windJiggle {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(2deg); }
+  75% { transform: rotate(-2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.wind-arrow {
+  animation: windJiggle 3s ease-in-out infinite;
+  transform-origin: 40px 30px; /* Ensure transform origin is set if needed */
+}
+
+/* Minimal styles for Radix Select to match existing look without Tailwind */
+.select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 10px;
+  min-width: 140px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+}
+.select-content {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  padding: 4px;
+  z-index: 100000; /* ensure above map */
+}
+.select-item {
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.select-item[data-highlighted] {
+  background-color: #f0f0f0;
+}
+
+/* Generic input and button styles to mimic shadcn look without Tailwind */
+.ui-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.ui-input:focus {
+  border-color: var(--masters-green);
+  box-shadow: 0 0 0 3px rgba(0, 103, 71, 0.15);
+}
+
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ui-button.primary {
+  background-color: var(--masters-green);
+  color: #fff;
+  border-color: var(--masters-yellow);
+}
+.ui-button.primary:hover { filter: brightness(1.05); }
+.ui-button:disabled { opacity: 0.6; cursor: not-allowed; }

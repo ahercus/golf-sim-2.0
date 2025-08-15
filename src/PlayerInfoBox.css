@@ -1,0 +1,117 @@
+/* src/PlayerInfoBox.css */
+
+.player-info-box {
+  position: absolute;
+  top: 15px;  /* Slightly higher */
+  right: 15px; /* Slightly more inset */
+  /* Use a similar teal color with transparency */
+  background-color: rgba(13, 117, 105, 0.85); 
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px; /* Slightly more rounded */
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern sporty font */
+  font-weight: 600; /* Semi-bold */
+  display: grid; /* Use grid for more complex layout */
+  grid-template-areas:
+    "name       score"
+    "details    score";
+  grid-template-columns: 1fr auto; /* Name/Details take up space, score is auto width */
+  align-items: center; /* Vertically align items within grid rows */
+  gap: 2px 15px; /* Row gap, Column gap */
+  z-index: 50; 
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  min-width: 320px; /* Adjust if needed */
+  /* Optional: Add subtle background pattern if desired later */
+}
+
+.course-name {
+  position: absolute;
+  top: -10px; 
+  left: 15px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 2px 8px;
+  font-size: 0.65em;
+  border-radius: 4px;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+}
+
+.player-name-container {
+  grid-area: name; /* Place in grid */
+  background-color: #006747; /* Masters Green */
+  padding: 4px 12px;
+  border-radius: 5px;
+  border: 1.5px solid #FFD700; /* Brighter Gold/Yellow */
+  display: inline-block; /* Fit content */
+  margin-bottom: 2px; /* Space between name and details */
+}
+
+.player-name {
+  font-size: 1.2em;
+  letter-spacing: 1px;
+  font-weight: 700; /* Bold */
+}
+
+.hole-details {
+  grid-area: details; /* Place in grid */
+  display: flex;
+  align-items: center; /* Align items horizontally */
+  gap: 10px; /* Space between items */
+  font-size: 0.8em;
+  color: #c0c0c0; /* Lighter grey */
+  font-weight: 500;
+}
+
+.detail-item {
+   white-space: nowrap;
+   letter-spacing: 0.5px;
+}
+
+.shot-number-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.shot-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7em;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.shot-circle.active {
+  background-color: #DC143C; /* Crimson Red */
+  color: white;
+  box-shadow: 0 0 3px rgba(255, 0, 0, 0.5);
+}
+
+.score-display {
+  grid-area: score; /* Place in grid */
+  font-size: 2.5em; /* Larger score */
+  font-weight: 700; /* Bold */
+  line-height: 1; /* Adjust line height */
+  text-align: right;
+  padding-left: 15px; /* Ensure space from details */
+}
+
+/*
+.cut-line {
+  position: absolute;
+  bottom: -10px;
+  right: 15px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 2px 8px;
+  font-size: 0.65em;
+  border-radius: 4px;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+}
+*/ 
