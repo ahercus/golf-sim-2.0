@@ -92,10 +92,10 @@
 
 ### Phase 1 – Scaffold Next.js + TS + Tailwind + shadcn
 
-- Initialize Next.js (TypeScript, App Router) at repo root.
-- Add Tailwind CSS and configure `globals.css`.
-- Initialize shadcn/ui and generate core components: Button, Input, Label, Tabs, Select, Textarea, Toast/Toaster.
-- Add aliases in `tsconfig.json` and `next.config.js` for `@/` paths.
+- [x] Initialize Next.js (TypeScript, App Router) at repo root.
+- [x] Add Tailwind CSS and configure `globals.css`.
+- [x] Initialize shadcn/ui and generate core components: Button, Input, Label, Tabs, Select, Textarea, Toast/Toaster.
+- [x] Add aliases in `tsconfig.json` and `next.config.js` for `@/` paths.
 
 ### Phase 2 – Extract and Type Domain Logic
 
@@ -126,13 +126,13 @@
 
 ### Phase 5 – API: Server-side OpenAI
 
-- Implement Next.js route handlers under `app/api/openai/*` to proxy Assistants v2 operations:
+- [x] Implement Next.js route handlers under `app/api/openai/*` to proxy Assistants v2 operations:
   - `POST /api/openai/thread` → create thread
   - `POST /api/openai/message` → add message
   - `POST /api/openai/run` → create run and poll until terminal state (server-side)
   - `GET /api/openai/latest` → latest assistant message
-- Move client-side OpenAI calls to fetch these endpoints.
-- Read secrets only on the server; validate inputs and return structured errors.
+- [x] Move client-side OpenAI calls to fetch these endpoints.
+- [x] Read secrets only on the server; validate inputs and return structured errors.
 
 ### Phase 6 – UI Rewrite to shadcn
 
@@ -153,9 +153,9 @@
 
 ### Phase 8 – Cleanup & Decommission CRA
 
-- Remove CRA-specific files (`public/index.html`, `react-scripts`, etc.).
-- Remove unused dependencies and dead code.
-- Update README with Next.js commands.
+- [x] Remove CRA-specific files (`public/index.html`, `react-scripts`, etc.).
+- [x] Remove unused dependencies and dead code.
+- [ ] Update README with Next.js commands.
 
 ## Dependency Plan
 
