@@ -254,6 +254,7 @@
 
 - [x] Create `app/(game)/page.tsx`
 - [x] Build `ClubSelect`, `ShotPlanInput`, `CommentaryPanel`
+- [x] Build `GolfSidebar` and `MapCanvas` wrappers
 - [ ] Replace inline styles with Tailwind where feasible
 
 ### Phase 5 – API

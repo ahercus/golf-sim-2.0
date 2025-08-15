@@ -4,7 +4,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '.
 import ClubSelect from '@/app/(game)/components/ClubSelect';
 import ShotPlanInput from '@/app/(game)/components/ShotPlanInput';
 import CommentaryPanel from '@/app/(game)/components/CommentaryPanel';
-import Map, { Marker, Source, Layer, FlyToInterpolator } from 'react-map-gl';
+import MapCanvas, { Marker, Source, Layer } from '@/app/(game)/components/MapCanvas';
 import { distanceYards, calculatePointAtDistance, bearingBetween, buildLinearPath } from '@/features/golf/lib/geometry';
 import { isInMultiPolygon } from '@/features/golf/lib/collision';
 import AimingOverlay from './AimingOverlay'; // <<< Import the new component
@@ -1396,11 +1396,11 @@ function GolfGame({
           />
         )}
 
-        <Map
-          ref={mapRef}
-          {...viewState}
+        <MapCanvas
+          mapRef={mapRef}
+          initialViewState={viewState}
           onMove={evt => setViewState(evt.viewState)}
-          mapboxAccessToken={MAPBOX_TOKEN}
+          mapboxToken={MAPBOX_TOKEN}
           style={{ width: "100%", height: "100%" }}
           mapStyle="mapbox://styles/mapbox/satellite-v9"
           dragPan={interactionMode === 'drag'}
@@ -1466,7 +1466,7 @@ function GolfGame({
           {renderPolygons(currentHoleGeo, 'bunkers', '#f7d795', 0.6)}
           {renderPolygons(currentHoleGeo, 'water', '#4287f5', 0.4)}
           {renderPolygons(currentHoleGeo, 'ob', '#ff6666', 0.15)}
-        </Map>
+        </MapCanvas>
 
         {/* Aiming Overlay */}
         {ballPosition && (
