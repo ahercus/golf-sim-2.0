@@ -108,7 +108,7 @@
 ### Phase 3 – State Management
 
 - Create `useGameStore.ts` (Zustand) for global state: player, selectedHole, scores, wind, aimMode.
-- Create `shotMachine.ts` (XState) for the shot lifecycle (idle → aiming → swinging → resolving → done/error).
+- [x] Add `shotMachine.ts` (XState) and integrate with UI (scaffolded; wire into GolfGame next)
 - Replace ad-hoc `useState` islands with store + machine where appropriate.
 
 ### Phase 4 – Page and Component Decomposition
@@ -155,7 +155,7 @@
 
 - [x] Remove CRA-specific files (`public/index.html`, `react-scripts`, etc.).
 - [x] Remove unused dependencies and dead code.
-- [ ] Update README with Next.js commands.
+- [x] Update README with Next.js commands.
 
 ## Dependency Plan
 
