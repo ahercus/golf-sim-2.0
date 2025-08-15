@@ -7,7 +7,7 @@ import CommentaryPanel from '@/app/(game)/components/CommentaryPanel';
 import MapCanvas, { Marker, Source, Layer } from '@/app/(game)/components/MapCanvas';
 import { distanceYards, calculatePointAtDistance, bearingBetween, buildLinearPath } from '@/features/golf/lib/geometry';
 import { isInMultiPolygon } from '@/features/golf/lib/collision';
-import AimingOverlay from './AimingOverlay'; // <<< Import the new component
+import AimingOverlay from './AimingOverlay';
 import PlayerInfoBox from './PlayerInfoBox'; // <<< Import the new component
 
 // Data Imports
