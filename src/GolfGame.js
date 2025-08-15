@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import * as Tabs from '@radix-ui/react-tabs';
-import * as Select from '@radix-ui/react-select';
-import { ChevronDown } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '../components/ui/select';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
+import { Label } from '../components/ui/label';
 import Map, { Marker, Source, Layer, FlyToInterpolator } from 'react-map-gl';
 import AimingOverlay from './AimingOverlay'; // <<< Import the new component
 import PlayerInfoBox from './PlayerInfoBox'; // <<< Import the new component
@@ -1378,17 +1380,17 @@ function GolfGame({
           {/* Removed Shot Info/Club from here - moved to Shot Tab */}
         </div>
 
-        {/* Tab Controls (Radix Tabs) */}
-        <Tabs.Root value={activeSidebarTab} onValueChange={setActiveSidebarTab}>
-          <Tabs.List className="sidebar-tabs">
-            <Tabs.Trigger value="shot" className={`sidebar-tab-button ${activeSidebarTab === 'shot' ? 'active' : ''}`}>
+        {/* Tab Controls */}
+        <Tabs value={activeSidebarTab} onValueChange={setActiveSidebarTab}>
+          <TabsList className="sidebar-tabs">
+            <TabsTrigger value="shot" className={`sidebar-tab-button ${activeSidebarTab === 'shot' ? 'active' : ''}`}>
               Shot Setup
-            </Tabs.Trigger>
-            <Tabs.Trigger value="commentary" className={`sidebar-tab-button ${activeSidebarTab === 'commentary' ? 'active' : ''}`}>
+            </TabsTrigger>
+            <TabsTrigger value="commentary" className={`sidebar-tab-button ${activeSidebarTab === 'commentary' ? 'active' : ''}`}>
               Commentary
-            </Tabs.Trigger>
-          </Tabs.List>
-        </Tabs.Root>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         {/* Tab Content Area - Takes remaining space */}        <div className="sidebar-tab-content">
           {/* Shot Selection Tab Content */}          {activeSidebarTab === 'shot' && (
@@ -1398,43 +1400,33 @@ function GolfGame({
                 <p>Wind: {wind.speed.toFixed(1)} mph @ {wind.direction.toFixed(0)}°</p>
               </div>
               <div style={modernStyles.clubSelector}>
-                <label htmlFor="club-select">Club: </label>
-                <Select.Root value={club} onValueChange={(val) => setClub(val)}>
-                  <Select.Trigger id="club-select" className="select-trigger" aria-label="Select club">
-                    <Select.Value placeholder="Select club" />
-                    <ChevronDown size={16} aria-hidden="true" />
-                  </Select.Trigger>
-                  <Select.Portal>
-                    <Select.Content className="select-content">
-                      <Select.Viewport>
-                        {Object.keys(CLUB_BASE_DISTANCE).map((clubName) => (
-                          <Select.Item key={clubName} value={clubName} className="select-item">
-                            <Select.ItemText>{clubName}</Select.ItemText>
-                          </Select.Item>
-                        ))}
-                      </Select.Viewport>
-                    </Select.Content>
-                  </Select.Portal>
-                </Select.Root>
+                <Label htmlFor="club-select">Club</Label>
+                <Select value={club} onValueChange={(val) => setClub(val)}>
+                  <SelectTrigger id="club-select" aria-label="Select club">
+                    <SelectValue placeholder="Select club" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(CLUB_BASE_DISTANCE).map((clubName) => (
+                      <SelectItem key={clubName} value={clubName}>{clubName}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <div style={{ margin: '15px 0' }}> {/* Add spacing */}                <label htmlFor="shot-description" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Think through your shot</label>
-                <input
-                  type="text"
+              <div style={{ margin: '15px 0' }}>
+                <Label htmlFor="shot-description">Think through your shot</Label>
+                <Input
                   id="shot-description"
                   value={shotDescription}
                   onChange={(e) => setShotDescription(e.target.value)}
                   placeholder="Describe your plan and how you intend to execute it"
-                  className="ui-input"
                 />
               </div>
-              <button 
-                onClick={handleTakeShot} 
+              <Button 
+                onClick={handleTakeShot}
                 disabled={!targetPoint || !ballPosition || isLoading}
-                style={modernStyles.shotButton} // Use existing style
-                className="ui-button primary"
               >
                 {isLoading ? 'Processing...' : 'Take Shot'}
-              </button>
+              </Button>
             </div>
           )}
 

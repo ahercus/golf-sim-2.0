@@ -264,10 +264,10 @@
 
 ### Phase 6 – UI to shadcn
 
-- [ ] Replace all dropdowns with shadcn `Select`
-- [ ] Replace Tabs with shadcn `Tabs`
-- [ ] Replace Buttons with shadcn `Button` variants
-- [ ] Replace text inputs with shadcn `Input`/`Textarea` + `Label`
+- [x] Replace dropdown in GolfGame with shadcn `Select`
+- [x] Replace Tabs in GolfGame with shadcn `Tabs`
+- [x] Replace primary action with shadcn `Button`
+- [x] Replace shot plan input with shadcn `Input` + `Label`
 
 ### Phase 7 – QA
 

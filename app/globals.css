@@ -1,10 +1,9 @@
 @import 'mapbox-gl/dist/mapbox-gl.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Tailwind base will be injected after init; preserve minimal global styles until full migration */
-html, body {
-  height: 100%;
-}
-
+html, body { height: 100%; }
 * { box-sizing: border-box; }
 
 
